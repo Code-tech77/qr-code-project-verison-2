@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, render_template, send_file, redirect
+from flask import Flask, request, jsonify, render_template
 from uuid import uuid4
 import os
 import qrcode
+
 
 app = Flask(__name__)
 DB_FILE = "qr_codes.txt"
@@ -19,6 +20,7 @@ def save_data(data):
     with open(DB_FILE, 'w') as f:
         for uid, values in data.items():
             f.write(f"{uid},{values['data']},{str(values['scanned'])}\n")
+
 
 @app.route('/')
 def index():
@@ -43,18 +45,19 @@ def generate_qr():
 
     return jsonify({'qr_path': '/' + qr_path}), 200
 
-@app.route('/scan_qr/<uid>')
+@app.route('/scan_qr/<uid>', methods=['GET'])
 def scan_qr(uid):
     db = load_data()
     if uid in db:
         if not db[uid]['scanned']:
             db[uid]['scanned'] = True
             save_data(db)
-            return redirect(db[uid]['data'])  # Redirect to user's original link
+            return f"<h2>Redirecting to: {db[uid]['data']}</h2><script>window.location.replace('{db[uid]['data']}');</script>"
         else:
-            return "<h1>QR Code Expired ❌</h1><p>This QR code has already been scanned once and is no longer valid.</p>", 400
+            return "<h2>QR code has already been scanned.</h2>"
     else:
-        return "<h1>Invalid QR Code ❌</h1><p>This QR code does not exist.</p>", 404
+        return "<h2>Invalid QR code.</h2>"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)

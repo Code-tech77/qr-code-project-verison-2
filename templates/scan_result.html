@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #4a4a4a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-container {
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #ffd700;
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid #ffd700;
+        }
+        
+        .title {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .message {
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .redirect-url {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffd700;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        
+        .loading {
+            color: #ffd700;
+            font-size: 14px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .home-link {
+            margin-top: 30px;
+            display: inline-block;
+            color: #ffd700;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid #ffd700;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .home-link:hover {
+            background: #ffd700;
+            color: #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        {% if scanned %}
+            <div class="icon">⚠️</div>
+            <h1 class="title">Already Scanned</h1>
+            <p class="message">This QR code has already been used and cannot be scanned again.</p>
+        {% elif invalid %}
+            <div class="icon">❌</div>
+            <h1 class="title">Invalid Code</h1>
+            <p class="message">The QR code you scanned is not valid.</p>
+        {% else %}
+            <div class="icon">✅</div>
+            <h1 class="title">Redirecting...</h1>
+            <p class="message">You will be redirected to the destination shortly.</p>
+            <div class="redirect-url">{{ url }}</div>
+            <div class="loading">
+                <span class="spinner"></span>
+                Preparing redirect...
+            </div>
+        {% endif %}
+        
+
+    </div>
+    
+    {% if not scanned and not invalid %}
+    <script>
+        setTimeout(() => {
+            window.location.replace('{{ url }}');
+        }, 2000);
+    </script>
+    {% endif %}
+</body>
+</html> 

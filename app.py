@@ -58,13 +58,13 @@ def scan_qr(uid):
             c.execute('UPDATE qr_codes SET scanned = 1 WHERE uid = ?', (uid,))
             conn.commit()
             conn.close()
-            return f"<h2>Redirecting to: {url}</h2><script>window.location.replace('{url}');</script>"
+            return render_template('scan_result.html', url=url, scanned=False, invalid=False)
         else:
             conn.close()
-            return "<h2>QR code has already been scanned.</h2>"
+            return render_template('scan_result.html', url='', scanned=True, invalid=False)
     else:
         conn.close()
-        return "<h2>Invalid QR code.</h2>"
+        return render_template('scan_result.html', url='', scanned=False, invalid=True)
 
 @app.route('/')
 def index():
